@@ -1,0 +1,28 @@
+name: Xcode - Build and Analyze
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build and analyse
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          # Prefer an Xcode that can build iOS 26 / WiFiAware when available
+          ls /Applications | grep -i Xcode || true
+          sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Build
+        run: |
+          xcodebuild clean build analyze \
+            -project ESPWiFiAwareDemo.xcodeproj \
+            -scheme ESPWiFiAwareDemo \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO
